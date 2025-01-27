@@ -1,8 +1,10 @@
 import requests
+import csv
+from datetime import datetime
 
-# change this to your repo
-REPO = "torvalds/linux"  # Format: "owner/repository"
+REPO = "torvalds/linux"
 URL = f"https://api.github.com/repos/{REPO}"
+CSV_FILE = "stars_history.csv"
 
 def get_stars():
     response = requests.get(URL)
@@ -13,7 +15,14 @@ def get_stars():
         print("Error fetching data:", response.status_code)
         return None
 
+def save_to_csv(stars):
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(CSV_FILE, "a", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow([now, stars])
+    print(f"Saved: {now} - {stars} ⭐")
+
 if __name__ == "__main__":
     stars = get_stars()
     if stars is not None:
-        print(f"{REPO} has {stars} stars ⭐")
+        save_to_csv(stars)
